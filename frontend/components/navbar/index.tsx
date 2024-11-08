@@ -1,4 +1,4 @@
-import { FiHome } from "react-icons/fi";
+import { FiBox } from "react-icons/fi";
 
 import styles from "./index.module.scss";
 
@@ -8,8 +8,8 @@ export default function Navbar() {
       <h3>Навигация</h3>
 
       <div className={styles.List}>
-        <Link href="/" icon={<FiHome />}>
-          Главная
+        <Link href="/" icon={<FiBox />}>
+          Все
         </Link>
       </div>
     </div>

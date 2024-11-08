@@ -9,13 +9,19 @@
 }
 
 .Content {
-  border: 1px solid var(--accent-color);
+  border: 2px solid var(--accent-color);
   width: 100%;
   min-height: 700px;
   border-radius: 20px;
   display: flex;
+  background-color: var(--secondary-bg-color);
+
+  -webkit-box-shadow: 6px 6px 22px 0px var(--accent-color);
+  -moz-box-shadow: 6px 6px 22px 0px var(--accent-color);
+  box-shadow: 6px 6px 22px 0px var(--accent-color);
 }
 
 .Children {
   padding: 20px;
+  background-color: var(--secondary-bg-color);
 }

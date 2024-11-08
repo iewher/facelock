@@ -6,8 +6,9 @@
   padding: 20px;
   min-height: 100%;
   width: 200px;
-  border-right: 1px solid var(--accent-color);
+  border-right: 2px solid var(--accent-color);
   border-radius: 20px 0 0 20px;
+  background-color: var(--secondary-bg-color);
 }
 
 .Link {
@@ -22,8 +23,9 @@
     display: flex;
     gap: 10px;
   }
+}
 
-  button:hover {
-    border-bottom: 1px solid var(--accent-color);
-  }
+.Link:hover {
+  text-decoration: underline;
+  text-underline-offset: 5px;
 }
