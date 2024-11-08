@@ -2,4 +2,15 @@
   padding: 64px 128px 64px 128px;
   min-height: 100vh;
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.Content {
+  border: 1px solid var(--accent-color);
+  width: 100%;
+  min-height: 700px;
+  border-radius: 20px;
 }

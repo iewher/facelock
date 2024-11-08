@@ -5,5 +5,10 @@ export default function PageLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div className={styles.PageLayout}>{children}</div>;
+  return (
+    <div className={styles.PageLayout}>
+      <h1>Facelock</h1>
+      <div className={styles.Content}>{children}</div>
+    </div>
+  );
 }
