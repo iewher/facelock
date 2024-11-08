@@ -22,6 +22,9 @@
 }
 
 .Children {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
   padding: 20px;
   background-color: var(--secondary-bg-color);
 }
