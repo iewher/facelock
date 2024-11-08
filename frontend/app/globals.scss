@@ -1,0 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Comfortaa:wght@300&family=Inter:wght@500&family=Poppins:wght@300&family=Ysabeau:wght@300&display=swap");
+
+:root {
+  --accent-color: #b22dff;
+  --bg-color: #3c3c3c;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: var(--bg-color);
+  color: white;
+  font-family: "Comfortaa";
+}
