@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 
-import PageLayout from "@/components/page-layout";
+import { PageLayout } from "@/components";
 import Favorites from "./favorites";
 
 export const metadata: Metadata = {

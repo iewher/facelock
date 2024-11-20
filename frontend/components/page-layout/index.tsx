@@ -1,7 +1,10 @@
+import { FiPlus } from "react-icons/fi";
+
+import { PrimaryButton } from "@/components";
 import Navbar from "../navbar";
 import styles from "./index.module.scss";
 
-export default function PageLayout({
+export function PageLayout({
   children,
   title,
 }: {
@@ -14,7 +17,10 @@ export default function PageLayout({
       <div className={styles.Content}>
         <Navbar />
         <div className={styles.Children}>
-          <h3>{title}</h3>
+          <div className={styles.Header}>
+            <h3>{title}</h3>
+            <PrimaryButton icon={<FiPlus />}>Создать</PrimaryButton>
+          </div>
           {children}
         </div>
       </div>
