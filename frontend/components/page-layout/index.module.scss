@@ -9,6 +9,12 @@
 }
 
 .Content {
+  display: flex;
+  gap: 35px;
+  width: 100%;
+}
+
+.MainContent {
   border: 2px solid var(--accent-color);
   width: 100%;
   min-height: 700px;
@@ -16,10 +22,32 @@
   display: flex;
   background-color: var(--secondary-bg-color);
   overflow: hidden;
+  position: relative;
 
   -webkit-box-shadow: 6px 6px 22px 0px var(--accent-color);
   -moz-box-shadow: 6px 6px 22px 0px var(--accent-color);
   box-shadow: 6px 6px 22px 0px var(--accent-color);
+}
+
+.CreateForm {
+  width: 400px;
+  background-color: var(--secondary-bg-color);
+  border-radius: 20px;
+  border: 2px solid var(--accent-color);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  -webkit-box-shadow: 6px 6px 22px 0px var(--accent-color);
+  -moz-box-shadow: 6px 6px 22px 0px var(--accent-color);
+  box-shadow: 6px 6px 22px 0px var(--accent-color);
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
 }
 
 .Children {

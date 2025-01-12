@@ -1,0 +1,19 @@
+.Input {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  input {
+    border: 1px solid var(--accent-color);
+    padding: 8px;
+    border-radius: 8px;
+    text-indent: 10px;
+    color: white;
+    background-color: var(--secondary-bg-color);
+    transition: 0.2s;
+  }
+
+  input:hover {
+    border: 1px solid white;
+  }
+}
