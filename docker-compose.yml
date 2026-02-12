@@ -1,9 +1,0 @@
-services:
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: postgres
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-    ports:
-      - 54323:54323
