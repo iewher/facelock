@@ -1,7 +1,6 @@
-data
-.idea
-
-logs
 node_modules
-.webpack
+dist
 out
+.DS_Store
+*.log*
+temp
