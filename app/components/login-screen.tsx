@@ -30,12 +30,12 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
           <div className="mx-auto mb-4 size-16 rounded-full bg-purple-900/50 flex items-center justify-center">
             <Lock className="size-8 text-purple-400" />
           </div>
-          <CardTitle className="text-2xl font-bold text-purple-100">FaceLock</CardTitle>
+          <CardTitle className="text-2xl font-bold text-purple-100">Facelock</CardTitle>
           <p className="text-purple-400/60 mt-2">Введите мастер-пароль</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
+            <div className="flex justify-center items-center gap-1 space-y-2">
               <Input
                 type={showPassword ? 'text' : 'password'}
                 value={password}
@@ -44,7 +44,7 @@ export function LoginScreen({ onLogin }: LoginScreenProps) {
                   setError('')
                 }}
                 placeholder="Мастер-пароль"
-                className="bg-purple-950/30 border-purple-800/50 text-purple-100 placeholder:text-purple-600 h-12 text-base"
+                className="bg-purple-950/30 border-purple-800/50 text-purple-100 placeholder:text-purple-600 h-12 text-base w-100"
                 autoFocus
               />
               <div className="flex justify-end">

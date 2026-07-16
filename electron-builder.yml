@@ -1,5 +1,5 @@
 appId: com.guasam.era
-productName: electron-react-app
+productName: Facelock
 asar: true
 asarUnpack:
   - resources/**
@@ -13,7 +13,7 @@ files:
   - '!{.env,.env.*,.npmrc,pnpm-lock.yaml}'
   - '!{tsconfig.json,tsconfig.node.json,tsconfig.web.json}'
 win:
-  executableName: electron-react-app
+  executableName: Facelock
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}
