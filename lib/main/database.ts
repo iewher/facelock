@@ -13,3 +13,11 @@ export const db = new Database(getDbPath(), {
 
 db.pragma('journal_mode = WAL')
 db.pragma('foreign_keys = ON')
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    uuid TEXT UNIQUE NOT NULL,
+    master_key TEXT NOT NULL
+  )
+`)
