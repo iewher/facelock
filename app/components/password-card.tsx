@@ -23,10 +23,12 @@ export function PasswordCard({ title, username, url, onClick }: PasswordCardProp
             <span className="text-purple-400/60">👤</span>
             <span className="truncate">{username}</span>
           </div>
-          <div className="flex items-center gap-2 text-xs text-purple-400/60">
-            <span>🔗</span>
-            <span className="truncate">{url}</span>
-          </div>
+          {url && (
+            <div className="flex items-center gap-2 text-xs text-purple-400/60">
+              <span>🔗</span>
+              <span className="truncate">{url}</span>
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>

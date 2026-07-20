@@ -8,6 +8,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [isNewUser, setIsNewUser] = useState(false)
   const [initialMasterKey, setInitialMasterKey] = useState<string>()
+  const [userId, setUserId] = useState<string>()
 
   useEffect(() => {
     checkAuth()
@@ -29,12 +30,16 @@ export default function App() {
 
   const handleLogin = async (masterKey: string) => {
     if (isNewUser) {
+      const user = await window.conveyor.app.authCheck()
+      if (user.exists) setUserId(String(user.id))
       setIsAuthenticated(true)
       setIsNewUser(false)
       return
     }
     const valid = await window.conveyor.app.authLogin(masterKey)
     if (valid) {
+      const user = await window.conveyor.app.authCheck()
+      if (user.exists) setUserId(String(user.id))
       setIsAuthenticated(true)
     }
   }
@@ -55,5 +60,5 @@ export default function App() {
     return <LoginScreen onLogin={handleLogin} initialMasterKey={initialMasterKey} isNewUser={isNewUser} />
   }
 
-  return <LibraryScreen onLogout={handleLogout} />
+  return <LibraryScreen userId={userId || ''} onLogout={handleLogout} />
 }

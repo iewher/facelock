@@ -21,3 +21,27 @@ db.exec(`
     master_key TEXT NOT NULL
   )
 `)
+
+db.exec(`
+  CREATE TABLE IF NOT EXISTS passwords (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    username TEXT NOT NULL,
+    password TEXT NOT NULL,
+    url TEXT DEFAULT '',
+    totp TEXT DEFAULT '',
+    notes TEXT DEFAULT '',
+    created_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+    updated_at INTEGER NOT NULL DEFAULT (strftime('%s', 'now')),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  )
+`)
+
+db.exec(`
+  CREATE INDEX IF NOT EXISTS idx_passwords_user_id ON passwords(user_id);
+  CREATE INDEX IF NOT EXISTS idx_passwords_title ON passwords(title);
+  CREATE INDEX IF NOT EXISTS idx_passwords_username ON passwords(username);
+  CREATE INDEX IF NOT EXISTS idx_passwords_url ON passwords(url);
+  CREATE INDEX IF NOT EXISTS idx_passwords_updated ON passwords(updated_at)
+`)

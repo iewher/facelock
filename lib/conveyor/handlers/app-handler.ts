@@ -9,19 +9,95 @@ export const registerAppHandlers = (app: App) => {
 
   // Auth operations
   handle('auth-check', () => {
-    const user = db.prepare('SELECT uuid, master_key FROM users LIMIT 1').get() as
-      { uuid: string; master_key: string } | undefined
+    const user = db.prepare('SELECT id, uuid, master_key FROM users LIMIT 1').get() as
+      { id: number; uuid: string; master_key: string } | undefined
     if (user) {
-      return { exists: true }
+      return { exists: true, id: user.id }
     }
     const uuid = crypto.randomUUID()
     const masterKey = crypto.randomBytes(16).toString('hex')
-    db.prepare('INSERT INTO users (uuid, master_key) VALUES (?, ?)').run(uuid, masterKey)
-    return { exists: false, uuid, master_key: masterKey }
+    const result = db.prepare('INSERT INTO users (uuid, master_key) VALUES (?, ?)').run(uuid, masterKey)
+    return { exists: false, id: result.lastInsertRowid as number, uuid, master_key: masterKey }
   })
 
   handle('auth-login', (masterKey: string) => {
     const user = db.prepare('SELECT id FROM users WHERE master_key = ?').get(masterKey) as { id: number } | undefined
     return !!user
+  })
+
+  // Password operations
+  handle('passwords-get-all', (userId: string) => {
+    const uid = Number(userId)
+    return db
+      .prepare(
+        'SELECT id, title, username, password, url, totp, notes, created_at, updated_at FROM passwords WHERE user_id = ? ORDER BY updated_at DESC'
+      )
+      .all(uid) as Array<{
+      id: number
+      title: string
+      username: string
+      password: string
+      url: string
+      totp: string
+      notes: string
+      created_at: number
+      updated_at: number
+    }>
+  })
+
+  handle('passwords-get-by-id', (id: number) => {
+    return db
+      .prepare(
+        'SELECT id, title, username, password, url, totp, notes, created_at, updated_at FROM passwords WHERE id = ?'
+      )
+      .get(id) as {
+      id: number
+      title: string
+      username: string
+      password: string
+      url: string
+      totp: string
+      notes: string
+      created_at: number
+      updated_at: number
+    }
+  })
+
+  handle(
+    'passwords-create',
+    (
+      userId: string,
+      data: { title: string; username: string; password: string; url?: string; totp?: string; notes?: string }
+    ) => {
+      const uid = Number(userId)
+      const now = Math.floor(Date.now() / 1000)
+      const result = db
+        .prepare(
+          'INSERT INTO passwords (user_id, title, username, password, url, totp, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+        )
+        .run(uid, data.title, data.username, data.password, data.url || '', data.totp || '', data.notes || '', now, now)
+      return result.lastInsertRowid as number
+    }
+  )
+
+  handle(
+    'passwords-update',
+    (
+      id: number,
+      data: { title: string; username: string; password: string; url?: string; totp?: string; notes?: string }
+    ) => {
+      const now = Math.floor(Date.now() / 1000)
+      const result = db
+        .prepare(
+          'UPDATE passwords SET title = ?, username = ?, password = ?, url = ?, totp = ?, notes = ?, updated_at = ? WHERE id = ?'
+        )
+        .run(data.title, data.username, data.password, data.url || '', data.totp || '', data.notes || '', now, id)
+      return result.changes > 0
+    }
+  )
+
+  handle('passwords-delete', (id: number) => {
+    const result = db.prepare('DELETE FROM passwords WHERE id = ?').run(id)
+    return result.changes > 0
   })
 }
