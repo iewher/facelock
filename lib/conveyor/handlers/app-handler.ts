@@ -30,7 +30,7 @@ export const registerAppHandlers = (app: App) => {
     const uid = Number(userId)
     return db
       .prepare(
-        'SELECT id, title, username, password, url, totp, notes, created_at, updated_at FROM passwords WHERE user_id = ? ORDER BY updated_at DESC'
+        'SELECT id, title, username, password, url, totp, notes, collection_id, created_at, updated_at FROM passwords WHERE user_id = ? ORDER BY updated_at DESC'
       )
       .all(uid) as Array<{
       id: number
@@ -40,6 +40,7 @@ export const registerAppHandlers = (app: App) => {
       url: string
       totp: string
       notes: string
+      collection_id: number | null
       created_at: number
       updated_at: number
     }>
@@ -48,7 +49,7 @@ export const registerAppHandlers = (app: App) => {
   handle('passwords-get-by-id', (id: number) => {
     return db
       .prepare(
-        'SELECT id, title, username, password, url, totp, notes, created_at, updated_at FROM passwords WHERE id = ?'
+        'SELECT id, title, username, password, url, totp, notes, collection_id, created_at, updated_at FROM passwords WHERE id = ?'
       )
       .get(id) as {
       id: number
@@ -58,6 +59,7 @@ export const registerAppHandlers = (app: App) => {
       url: string
       totp: string
       notes: string
+      collection_id: number | null
       created_at: number
       updated_at: number
     }
@@ -67,15 +69,35 @@ export const registerAppHandlers = (app: App) => {
     'passwords-create',
     (
       userId: string,
-      data: { title: string; username: string; password: string; url?: string; totp?: string; notes?: string }
+      data: {
+        title: string
+        username: string
+        password: string
+        url?: string
+        totp?: string
+        notes?: string
+        collection_id?: number | null
+      }
     ) => {
       const uid = Number(userId)
       const now = Math.floor(Date.now() / 1000)
+      const collectionId = data.collection_id ?? null
       const result = db
         .prepare(
-          'INSERT INTO passwords (user_id, title, username, password, url, totp, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)'
+          'INSERT INTO passwords (user_id, collection_id, title, username, password, url, totp, notes, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
         )
-        .run(uid, data.title, data.username, data.password, data.url || '', data.totp || '', data.notes || '', now, now)
+        .run(
+          uid,
+          collectionId,
+          data.title,
+          data.username,
+          data.password,
+          data.url || '',
+          data.totp || '',
+          data.notes || '',
+          now,
+          now
+        )
       return result.lastInsertRowid as number
     }
   )
@@ -84,14 +106,33 @@ export const registerAppHandlers = (app: App) => {
     'passwords-update',
     (
       id: number,
-      data: { title: string; username: string; password: string; url?: string; totp?: string; notes?: string }
+      data: {
+        title: string
+        username: string
+        password: string
+        url?: string
+        totp?: string
+        notes?: string
+        collection_id?: number | null
+      }
     ) => {
       const now = Math.floor(Date.now() / 1000)
+      const collectionId = 'collection_id' in data ? data.collection_id : undefined
       const result = db
         .prepare(
-          'UPDATE passwords SET title = ?, username = ?, password = ?, url = ?, totp = ?, notes = ?, updated_at = ? WHERE id = ?'
+          'UPDATE passwords SET title = ?, username = ?, password = ?, url = ?, totp = ?, notes = ?, collection_id = ?, updated_at = ? WHERE id = ?'
         )
-        .run(data.title, data.username, data.password, data.url || '', data.totp || '', data.notes || '', now, id)
+        .run(
+          data.title,
+          data.username,
+          data.password,
+          data.url || '',
+          data.totp || '',
+          data.notes || '',
+          collectionId ?? null,
+          now,
+          id
+        )
       return result.changes > 0
     }
   )
@@ -99,5 +140,40 @@ export const registerAppHandlers = (app: App) => {
   handle('passwords-delete', (id: number) => {
     const result = db.prepare('DELETE FROM passwords WHERE id = ?').run(id)
     return result.changes > 0
+  })
+
+  // Collection operations
+  handle('collections-get-all', (userId: string) => {
+    const uid = Number(userId)
+    return db
+      .prepare(
+        'SELECT id, uuid, name, created_at, updated_at FROM collections WHERE user_id = ? ORDER BY updated_at DESC'
+      )
+      .all(uid) as Array<{ id: number; uuid: string; name: string; created_at: number; updated_at: number }>
+  })
+
+  handle('collections-create', (userId: string, data: { name: string }) => {
+    const uid = Number(userId)
+    const uuid = crypto.randomUUID()
+    const now = Math.floor(Date.now() / 1000)
+    const result = db
+      .prepare('INSERT INTO collections (user_id, uuid, name, created_at, updated_at) VALUES (?, ?, ?, ?, ?)')
+      .run(uid, uuid, data.name, now, now)
+    return { id: result.lastInsertRowid as number, uuid }
+  })
+
+  handle('collections-update', (id: number, data: { name: string }) => {
+    const now = Math.floor(Date.now() / 1000)
+    const result = db.prepare('UPDATE collections SET name = ?, updated_at = ? WHERE id = ?').run(data.name, now, id)
+    return result.changes > 0
+  })
+
+  handle('collections-delete', (id: number) => {
+    const count = db.prepare('SELECT COUNT(*) as cnt FROM passwords WHERE collection_id = ?').get(id) as { cnt: number }
+    if (count.cnt > 0) {
+      return { success: false, isEmpty: false }
+    }
+    const result = db.prepare('DELETE FROM collections WHERE id = ?').run(id)
+    return { success: result.changes > 0, isEmpty: true }
   })
 }

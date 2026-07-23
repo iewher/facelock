@@ -1,5 +1,13 @@
 import { z } from 'zod'
 
+const collectionSchema = z.object({
+  id: z.number(),
+  uuid: z.string(),
+  name: z.string(),
+  created_at: z.number(),
+  updated_at: z.number(),
+})
+
 export const appIpcSchema = {
   version: {
     args: z.tuple([]),
@@ -29,6 +37,7 @@ export const appIpcSchema = {
         url: z.string(),
         totp: z.string(),
         notes: z.string(),
+        collection_id: z.number().nullable(),
         created_at: z.number(),
         updated_at: z.number(),
       })
@@ -58,6 +67,7 @@ export const appIpcSchema = {
         url: z.string().optional(),
         totp: z.string().optional(),
         notes: z.string().optional(),
+        collection_id: z.number().nullable().optional(),
       }),
     ]),
     return: z.number(),
@@ -72,6 +82,7 @@ export const appIpcSchema = {
         url: z.string().optional(),
         totp: z.string().optional(),
         notes: z.string().optional(),
+        collection_id: z.number().nullable().optional(),
       }),
     ]),
     return: z.boolean(),
@@ -79,5 +90,29 @@ export const appIpcSchema = {
   'passwords-delete': {
     args: z.tuple([z.number()]),
     return: z.boolean(),
+  },
+  'collections-get-all': {
+    args: z.tuple([z.string()]),
+    return: z.array(collectionSchema),
+  },
+  'collections-create': {
+    args: z.tuple([
+      z.string(),
+      z.object({
+        name: z.string(),
+      }),
+    ]),
+    return: z.object({ id: z.number(), uuid: z.string() }),
+  },
+  'collections-update': {
+    args: z.tuple([z.number(), z.object({ name: z.string() })]),
+    return: z.boolean(),
+  },
+  'collections-delete': {
+    args: z.tuple([z.number()]),
+    return: z.object({
+      success: z.boolean(),
+      isEmpty: z.boolean(),
+    }),
   },
 }
