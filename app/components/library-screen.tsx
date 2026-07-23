@@ -144,7 +144,8 @@ export function LibraryScreen({ userId, onLogout }: LibraryScreenProps) {
   const handleDeleteCollection = async () => {
     if (!deletingCollectionId) return
     try {
-      await window.conveyor.app.collectionsDelete(deletingCollectionId)
+      const result = await window.conveyor.app.collectionsDelete(deletingCollectionId)
+      if (!result.success) return
       setModalMode('none')
       setDeletingCollectionId(null)
       if (selectedCollection === deletingCollectionId) setSelectedCollection(null)

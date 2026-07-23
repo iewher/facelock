@@ -112,7 +112,6 @@ export const appIpcSchema = {
     args: z.tuple([z.number()]),
     return: z.object({
       success: z.boolean(),
-      isEmpty: z.boolean(),
     }),
   },
 }

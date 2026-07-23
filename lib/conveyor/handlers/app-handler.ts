@@ -169,11 +169,10 @@ export const registerAppHandlers = (app: App) => {
   })
 
   handle('collections-delete', (id: number) => {
-    const count = db.prepare('SELECT COUNT(*) as cnt FROM passwords WHERE collection_id = ?').get(id) as { cnt: number }
-    if (count.cnt > 0) {
-      return { success: false, isEmpty: false }
-    }
+    // Unset collection_id from all passwords in this collection
+    db.prepare('UPDATE passwords SET collection_id = NULL WHERE collection_id = ?').run(id)
+    // Delete the collection
     const result = db.prepare('DELETE FROM collections WHERE id = ?').run(id)
-    return { success: result.changes > 0, isEmpty: true }
+    return { success: result.changes > 0 }
   })
 }
