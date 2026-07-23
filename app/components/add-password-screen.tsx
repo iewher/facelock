@@ -19,6 +19,7 @@ interface AddPasswordScreenProps {
   onSave: () => void
   onBack: () => void
   collections?: Array<{ id: number; name: string }>
+  defaultCollectionId?: number | null
 }
 
 export function AddPasswordScreen({
@@ -28,6 +29,7 @@ export function AddPasswordScreen({
   onSave,
   onBack,
   collections = [],
+  defaultCollectionId = null,
 }: AddPasswordScreenProps) {
   const [title, setTitle] = useState('')
   const [username, setUsername] = useState('')
@@ -50,8 +52,10 @@ export function AddPasswordScreen({
       setTotp(existingEntry.totp)
       setNotes(existingEntry.notes)
       setCollectionId(existingEntry.collection_id ?? null)
+    } else {
+      setCollectionId(defaultCollectionId)
     }
-  }, [existingEntry])
+  }, [existingEntry, defaultCollectionId])
 
   const generatePassword = () => {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*'

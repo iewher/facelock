@@ -196,6 +196,7 @@ export function LibraryScreen({ userId, onLogout }: LibraryScreenProps) {
           setEditingId(null)
         }}
         collections={collections.map((c) => ({ id: c.id, name: c.name }))}
+        defaultCollectionId={editingId ? undefined : selectedCollection}
       />
     )
   }
