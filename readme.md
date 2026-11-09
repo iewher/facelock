@@ -1,172 +1,97 @@
-![logo](public/logo.png)
+![Логотип Facelock](public/logo.png)
 
 # Facelock
 
-Secure local password manager.
+Facelock — локальный менеджер паролей для Electron. Данные хранятся в базе SQLite на текущем устройстве.
 
-## Features
+## Возможности
 
-- 🔐 Face authentication for secure access
-- 📦 Password collections for organized storage
-- 🔍 Full-text search across all entries
-- 🎲 Built-in password generator
-- 📋 TOTP/2FA support
-- 💾 Local SQLite storage — your data stays on your device
-- 🌙 Dark theme with purple accent
+- Вход по мастер-ключу. При первом запуске для локального профиля создаётся случайный мастер-ключ, который необходимо сохранить.
+- Записи паролей с названием, логином или электронной почтой, паролем, URL, заметками и необязательным секретом TOTP/2FA.
+- Коллекции для группировки записей: создание, переименование и удаление.
+- Фильтрация записей по названию и логину на стороне интерфейса.
+- Генерация пароля длиной 20 символов в форме добавления или редактирования записи.
+- Безрамочное окно и тёмный интерфейс с фиолетовыми акцентами.
 
-## Installation
+## Важная информация о безопасности
 
-### Prerequisites
+Это ранняя версия локального приложения, а не готовое зашифрованное хранилище. Текущая реализация хранит мастер-ключ и поля паролей в локальной базе SQLite; биометрическая аутентификация и генерация кодов TOTP пока не реализованы. Храните файл базы данных и созданный мастер-ключ в безопасности.
 
-- Node.js 18+
-- pnpm (recommended) or npm
+## Требования
 
-### Setup
+- Node.js 18 или новее
+- npm (в репозитории есть файл `package-lock.json`)
+
+## Установка
 
 ```bash
-# Clone the repository
-git clone https://github.com/iewher/facelock
+git clone https://github.com/iewher/facelock.git
 cd facelock
-
-# Install dependencies
 npm install
 ```
 
-## Development
-
-### Run in development mode
+## Разработка
 
 ```bash
 npm run dev
 ```
 
-This starts the Vite dev server and Electron app with hot-reload enabled.
+Команда запускает Electron вместе с Vite-сервером разработки и горячей перезагрузкой.
 
-### Project Structure
+## Сборка
 
-```
-├── app/                    # React frontend
-│   ├── components/         # UI components
-│   ├── hooks/              # Custom React hooks
-│   └── styles/             # Global styles
-├── lib/                    # Shared code & Electron main process
-│   ├── conveyor/           # Type-safe IPC system
-│   │   ├── api/            # API classes (renderer → main)
-│   │   ├── handlers/       # IPC handlers (main process)
-│   │   └── schemas/        # Zod validation schemas
-│   ├── main/               # Electron main process
-│   │   ├── app.ts          # App entry point
-│   │   └── database.ts     # SQLite setup & migrations
-│   └── preload/            # Electron preload script
-├── resources/              # App assets (icons, etc.)
-└── electron-builder.yml    # Build configuration
+```bash
+# Сборка приложения Electron и Vite
+npm run vite:build:app
+
+# Сборка распакованной версии приложения
+npm run build:unpack
+
+# Сборка установщика для нужной платформы
+npm run build:win
+npm run build:mac
+npm run build:linux
 ```
 
-## Usage
+`electron-builder` сохраняет артефакты в выходных каталогах, настроенных в `electron-builder.yml`.
 
-### Getting Started
+## Расположение данных
 
-1. **First Launch** — On first launch, you'll be prompted to set up a master key
-2. **Authentication** — Use your face to unlock the app (or master key as fallback)
-3. **Library** — You'll see the main password library with all your saved entries
+База данных называется `facelock.db` и создаётся в каталоге Electron `app.getPath('userData')`. Точный путь зависит от операционной системы и идентификатора приложения Electron.
 
-### Managing Passwords
+## Структура проекта
 
-#### Adding a Password
+```text
+app/                         React-интерфейс и компоненты UI
+lib/main/                    Главный процесс Electron и настройка SQLite
+lib/preload/                 Preload-скрипт и context bridge
+lib/conveyor/                Типизированные IPC API, обработчики и Zod-схемы
+public/                      Статические ресурсы интерфейса
+resources/                   Иконки приложения и ресурсы для упаковки
+electron-builder.yml         Конфигурация упаковки приложения
+```
 
-1. Click **"Добавить"** (Add) button
-2. Fill in the fields:
-   - **Название** — Entry name (required)
-   - **Логин / Email** — Username or email
-   - **Пароль** — Password (required)
-   - **URL** — Website URL (optional)
-   - **2FA / TOTP** — Two-factor authentication code (optional)
-   - **Примечания** — Additional notes (optional)
-3. Click **"Сохранить"** (Save)
+## Архитектура
 
-**Quick actions:**
+Renderer-процесс обращается к главному процессу через слой Conveyor IPC:
 
-- 🎲 Generate a random password
-- 👁 Show/hide password
+- `lib/conveyor/schemas/` — контракты аргументов и возвращаемых значений на базе Zod.
+- `lib/conveyor/api/` — типизированные клиентские методы для renderer-процесса.
+- `lib/conveyor/handlers/` — соответствующие IPC-обработчики Electron.
+- `lib/main/database.ts` — инициализация таблиц и индексов SQLite.
 
-#### Editing a Password
+База данных содержит таблицы `users`, `passwords` и `collections`. После удаления коллекции связанные записи паролей становятся независимыми.
 
-1. Hover over a password card
-2. Click the ✏️ **Edit** button
-3. Modify fields and save
+## Основные команды
 
-#### Deleting a Password
+| Команда | Назначение |
+| --- | --- |
+| `npm run dev` | Запуск приложения в режиме разработки |
+| `npm run format` | Форматирование файлов с помощью Prettier |
+| `npm run lint` | Запуск ESLint с автоматическими исправлениями |
+| `npm run start` | Предпросмотр собранного Electron-приложения |
+| `npm run vite:build:app` | Сборка renderer- и main-бандлов |
 
-1. Hover over a password card
-2. Click the 🗑️ **Delete** button
-3. Confirm deletion
+## Для разработчиков
 
-### Managing Collections
-
-Collections organize your passwords into groups.
-
-#### Creating a Collection
-
-1. Click the **+** button in the **Коллекции** sidebar
-2. Enter a collection name
-3. Click **"Сохранить"**
-
-#### Adding Passwords to Collections
-
-When creating or editing a password:
-
-1. Click the **Коллекция** dropdown
-2. Select the desired collection
-3. Save the password
-
-The password will automatically appear in that collection's view.
-
-#### Viewing Collections
-
-- **Независимые** — Passwords without a collection
-- **Collection name** — Click any collection to view its passwords
-
-#### Editing a Collection
-
-1. Hover over a collection in the sidebar
-2. Click the ✏️ **Edit** button
-3. Change the name and save
-
-#### Deleting a Collection
-
-1. Hover over a collection in the sidebar
-2. Click the 🗑️ **Delete** button
-3. If the collection has passwords, a warning appears — passwords will become independent
-4. Click **"Удалить"** to confirm
-
-### Search
-
-Use the search bar to filter passwords by title or username.
-
-## Architecture
-
-### Conveyor IPC System
-
-Type-safe inter-process communication between Electron main and renderer processes:
-
-- **Schemas** (`lib/conveyor/schemas/`) — Zod validation schemas define API contracts
-- **APIs** (`lib/conveyor/api/`) — Client classes for calling main process methods
-- **Handlers** (`lib/conveyor/handlers/`) — Server-side IPC handlers
-- **Hooks** (`app/hooks/use-conveyor.ts`) — React hook for accessing APIs
-
-### Database
-
-SQLite database with automatic migrations:
-
-- `users` — User accounts and master keys
-- `passwords` — Saved password entries with collection references
-- `collections` — Password groups with UUIDs
-
-## Tech Stack
-
-- **Frontend:** React 19, TypeScript, Tailwind CSS 4
-- **UI:** Radix UI, shadcn/ui components
-- **State:** Zustand, React Query
-- **Backend:** Electron 40, better-sqlite3
-- **IPC:** Custom Conveyor system with Zod validation
-- **Build:** Vite, electron-builder
+Перед внесением изменений прочитайте [AGENT.md](AGENT.md). В нём описаны соглашения проекта, команды проверки и чувствительные с точки зрения безопасности участки кода.

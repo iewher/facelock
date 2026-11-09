@@ -20,7 +20,8 @@
     "electron:build:linux": "electron-builder --linux",
     "electron:build:dir": "electron-builder --dir",
     "build:unpack": "run-s vite:build:app electron:build:dir",
-    "build:win": "rtrun-s vite:build:app electron:build:win\",\n    \"build:mac\": \"run-s vite:build:app elecon:build:mac",
+    "build:win": "run-s vite:build:app electron:build:win",
+    "build:mac": "run-s vite:build:app electron:build:mac",
     "build:linux": "run-s vite:build:app electron:build:linux"
   },
   "repository": {
